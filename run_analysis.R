@@ -15,6 +15,8 @@ filter <- sort(filter)
 # extracts variables from data set which match the filter 
 filtered_vars <- paste("V", filter, sep="")
 extracted_data <- data[filtered_vars]
+# filter the features vector too
+extracted_features <- features[filter,]
 
 # Step 3 - Uses descriptive activity names to name the activities in the data set
 # read the training  and test labels into R, and combined them into a data frame which is named 'labels'
@@ -24,20 +26,19 @@ labels <- rbind(y_train, y_test)
 # read activity names into R
 activity_names <- read.table("activity_labels.txt", head = FALSE, sep = "")
 # attach activity names by merge labels and actitity_names
-
 # codes below will use join method of 'plyr' package
 install.packages("plyr")
 library(plyr)
 labels <- join(labels, activity_names, by = "V1", type = "left")
 # name the activities in the data set by adding a new variable 'activity'
-data$activity <- labels$V2
+extracted_data$activity <- labels$V2
 
 # Step 4 - Appropriately labels the data set with descriptive variable names.
 # the second variable V2 of data frame 'features' contains the descriptive variable names
 # codes below will use setnames method of 'data.table' package
 install.packages("data.table")
 library(data.table)
-setnames(data, old = colnames(data)[1:561], new = as.character(features$V2))
+setnames(extracted_data, old = colnames(extracted_data)[1:79], new = as.character(extracted_features$V2))
 
 # Step 5 - Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 # read subjects
@@ -45,14 +46,15 @@ subject_train <- read.table("./train/subject_train.txt" ,head = FALSE, sep = "")
 subject_test <- read.table("./test/subject_test.txt" ,head = FALSE, sep = "")
 subject <- rbind(subject_train, subject_test)
 # link subjects with observations by adding a new variable 'subject' to data set
-data$subject <- subject[[1]]
+extracted_data$subject <- subject[[1]]
 # get mean of each variables in each categorty (group by actiity*subject)
-aggdata <- aggregate(t[1:561], by=list(t$subject, t$activity), FUN=mean)
+aggdata <- aggregate(extracted_data[1:79], by=list(extracted_data$subject, extracted_data$activity), FUN=mean)
+# remove weird characters like "()" "-" from column names
+setnames(aggdata, old = colnames(aggdata), new = gsub("\\(|\\)", "", colnames(aggdata)) ) # remove "()"
+setnames(aggdata, old = colnames(aggdata), new = gsub("-", ".", colnames(aggdata)) ) # replace "-" with "."
 # rename the first and second variables(Group.1 and Group.2)  to subject and activity, and get tidy data
 tidy_data <- rename(aggdata, c("Group.1"="subject", "Group.2"="activity"))
 
 
 # Writes tidy data to a file for uploading
 write.table(tidy_data, "tidy_data.txt", row.name=FALSE)
-
-
