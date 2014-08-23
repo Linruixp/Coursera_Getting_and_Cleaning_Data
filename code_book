@@ -16,6 +16,8 @@ the measurements on the mean and standard deviation for each original measuremen
 getdata-projectfiles-UCI HAR Dataset.zip for details).  
 
 
+Data Dictionary tidy_data.txt
+==========================================================================================================
 "subject" 2
   type integer, range 1:30
   identifies the subject who performed the activity.
