@@ -9,8 +9,8 @@ Author: Linruixp@gmail.com
   The project is to process some raw data from Human Activity Recognition Using Smartphones Dataset, which
 can be download from https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip.
   In this repo there are two files - run_analysis.R and code_book.txt. 
-  run_analysis.R is a R script to processthe raw  data and generate tidy data into a file - tidy_data.txt. 
-  code_book.txt is the code book for tidy_data.txt.
+  The file run_analysis.R is a R script to processthe raw  data and generate tidy data into a file - tidy_data.txt. 
+  The file code_book.txt is the code book for tidy_data.txt.
   
   To run run_analysis.R, you should follow this:
 ====================================================================
