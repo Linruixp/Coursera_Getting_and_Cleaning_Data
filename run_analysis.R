@@ -9,8 +9,9 @@ data <- rbind(train, test)
 # Step 2 - Extracts only the measurements on the mean and standard deviation for each measurement. 
 # reads features.txt into R
 features <- read.table("features.txt", head = FALSE, sep = "")
-# selecting column names(measurenments) whose name with "mean" or "std", storing thier number into a vector called filter
-filter <- c(grep("mean", features$V2), grep("std", features$V2))
+# selecting column names(measurenments) whose name with "mean()" or "std()", 
+# storing thier number into a vector called filter
+filter <- c(grep("mean\\(\\)", features$V2), grep("std\\(\\)", features$V2))
 filter <- sort(filter)
 # extracts variables from data set which match the filter 
 filtered_vars <- paste("V", filter, sep="")
@@ -38,7 +39,7 @@ extracted_data$activity <- labels$V2
 # codes below will use setnames method of 'data.table' package
 install.packages("data.table")
 library(data.table)
-setnames(extracted_data, old = colnames(extracted_data)[1:79], new = as.character(extracted_features$V2))
+setnames(extracted_data, old = colnames(extracted_data)[1:length(filter)], new = as.character(extracted_features$V2))
 
 # Step 5 - Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 # read subjects
@@ -48,8 +49,8 @@ subject <- rbind(subject_train, subject_test)
 # link subjects with observations by adding a new variable 'subject' to data set
 extracted_data$subject <- subject[[1]]
 # get mean of each variables in each categorty (group by actiity*subject)
-aggdata <- aggregate(extracted_data[1:79], by=list(extracted_data$subject, extracted_data$activity), FUN=mean)
-# remove weird characters like "()" "-" from column names
+aggdata <- aggregate(extracted_data[1:length(filter)], by=list(extracted_data$subject, extracted_data$activity), FUN=mean)
+# remove weird characters like "()" "-"
 setnames(aggdata, old = colnames(aggdata), new = gsub("\\(|\\)", "", colnames(aggdata)) ) # remove "()"
 setnames(aggdata, old = colnames(aggdata), new = gsub("-", ".", colnames(aggdata)) ) # replace "-" with "."
 # rename the first and second variables(Group.1 and Group.2)  to subject and activity, and get tidy data
@@ -58,3 +59,5 @@ tidy_data <- rename(aggdata, c("Group.1"="subject", "Group.2"="activity"))
 
 # Writes tidy data to a file for uploading
 write.table(tidy_data, "tidy_data.txt", row.name=FALSE)
+
+
